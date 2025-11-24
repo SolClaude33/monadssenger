@@ -98,18 +98,19 @@ DATABASE_URL=tu_connection_string_de_postgresql
 DATABASE_URL=postgresql://postgres:password@containers-us-west-123.railway.app:5432/railway
 ```
 
-### 2.3 Configurar Build Settings (IMPORTANTE)
+### 2.3 Configurar Build Settings
 
-**⚠️ CRUCIAL:** Railway necesita saber que el proyecto está en la subcarpeta `monadssenger/`
+Railway debería detectar automáticamente Next.js ya que el proyecto está en la raíz del repositorio.
 
+**Verificación:**
+- Railway detectará automáticamente `package.json` y configurará los comandos de build
+- **Build Command**: `pnpm install && pnpm build` (o `npm install && npm run build`)
+- **Start Command**: `pnpm start` (o `npm start`)
+
+**Si Railway no detecta automáticamente:**
 1. Ve a **Settings** → **Build & Deploy**
-2. En **"Root Directory"**, escribe: `monadssenger`
-3. Railway usará automáticamente los archivos de configuración (`nixpacks.toml`, `railway.toml`) que están en la raíz
-4. Los comandos de build y start ya están configurados en `nixpacks.toml` para apuntar a la carpeta correcta
-
-**Si Railway aún no detecta el proyecto:**
-- Verifica que los archivos `nixpacks.toml` y `railway.toml` estén en la raíz del repositorio
-- Asegúrate de que el Root Directory esté configurado como `monadssenger`
+2. Verifica que los comandos estén configurados correctamente
+3. Asegúrate de que el **Root Directory** esté vacío o sea `/` (raíz)
 
 ### 2.4 Desplegar
 
