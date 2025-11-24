@@ -193,11 +193,12 @@ export default function MonadssengerPage() {
     }
 
     // Set up real-time listener
+    // Note: Using orderBy requires a composite index in Firestore
+    // For now, we'll fetch all messages and sort client-side to avoid index requirement
     const q = query(
       collection(db, "messages"),
       where("room", "==", currentRoom),
-      orderBy("created_at", "asc"),
-      limit(50),
+      limit(100), // Increased limit since we're sorting client-side
     )
 
     console.log("[Monadssenger] Setting up Firebase listener for room:", currentRoom)
@@ -216,6 +217,12 @@ export default function MonadssengerPage() {
             created_at: data.created_at?.toDate ? data.created_at.toDate().toISOString() : new Date().toISOString(),
             room: data.room,
           })
+        })
+        // Sort by created_at client-side since we can't use orderBy without index
+        newMessages.sort((a, b) => {
+          const timeA = new Date(a.created_at).getTime()
+          const timeB = new Date(b.created_at).getTime()
+          return timeA - timeB
         })
         setMessages(newMessages)
       },
