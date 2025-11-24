@@ -153,18 +153,24 @@ export default function MonadssengerPage() {
         return
       }
 
+      // Wait a bit for Firebase to initialize
+      await new Promise((resolve) => setTimeout(resolve, 500))
+
       try {
         // Try to access the collection to verify connection
         // We use a query with limit 1 to minimize cost
         if (!db) {
-          throw new Error("Firebase not initialized")
+          console.error("[Monadssenger] Firebase db is null - check initialization")
+          setUseInMemory(true)
+          return
         }
         const q = query(collection(db, "messages"), limit(1))
         await getDocs(q)
-        console.log("[Monadssenger] Firebase available")
+        console.log("[Monadssenger] Firebase available and working")
         setUseInMemory(false)
-      } catch (err) {
-        console.log("[Monadssenger] Firebase check failed, using in-memory storage:", err)
+      } catch (err: any) {
+        console.error("[Monadssenger] Firebase check failed:", err)
+        console.error("[Monadssenger] Error details:", err.message, err.code)
         setUseInMemory(true)
       }
     }

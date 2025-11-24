@@ -18,9 +18,12 @@ if (firebaseConfig.apiKey) {
   try {
     app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig)
     db = getFirestore(app)
+    console.log("[Firebase] Initialized successfully")
   } catch (error) {
-    console.error("Firebase initialization error:", error)
+    console.error("[Firebase] Initialization error:", error)
   }
+} else {
+  console.warn("[Firebase] Missing API key - Firebase will not work")
 }
 
 export { db }

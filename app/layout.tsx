@@ -8,6 +8,9 @@ export const metadata: Metadata = {
   title: "Monadssenger",
   description: "Created with v0",
   generator: "v0.app",
+  icons: {
+    icon: "/monad-logo.png",
+  },
 }
 
 export default function RootLayout({
