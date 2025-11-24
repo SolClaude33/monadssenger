@@ -156,6 +156,9 @@ export default function MonadssengerPage() {
       try {
         // Try to access the collection to verify connection
         // We use a query with limit 1 to minimize cost
+        if (!db) {
+          throw new Error("Firebase not initialized")
+        }
         const q = query(collection(db, "messages"), limit(1))
         await getDocs(q)
         console.log("[Monadssenger] Firebase available")
@@ -173,6 +176,12 @@ export default function MonadssengerPage() {
     if (!username) return
 
     if (useInMemory) {
+      setMessages(inMemoryMessages[currentRoom] || [])
+      return
+    }
+
+    if (!db) {
+      setUseInMemory(true)
       setMessages(inMemoryMessages[currentRoom] || [])
       return
     }
@@ -218,7 +227,7 @@ export default function MonadssengerPage() {
   }, [currentRoom, username, useInMemory, inMemoryMessages])
 
   useEffect(() => {
-    if (!username || useInMemory) return
+    if (!username || useInMemory || !db) return
 
     // Clean up old typing indicators (optional, could be done via Cloud Functions)
     // For now, we just read.
@@ -329,7 +338,7 @@ export default function MonadssengerPage() {
     setMessages((prev) => [...prev, newMessage])
     setMessage("")
 
-    if (useInMemory) {
+    if (useInMemory || !db) {
       // Store in memory
       setInMemoryMessages((prev) => ({
         ...prev,

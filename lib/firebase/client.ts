@@ -10,11 +10,11 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || "",
 }
 
-// Initialize Firebase only if we have the required config
+// Initialize Firebase
 let app
 let db
 
-if (typeof window !== "undefined" && firebaseConfig.apiKey) {
+if (firebaseConfig.apiKey) {
   try {
     app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig)
     db = getFirestore(app)
