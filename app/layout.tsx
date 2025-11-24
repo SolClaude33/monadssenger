@@ -6,8 +6,7 @@ import { Suspense } from "react"
 
 export const metadata: Metadata = {
   title: "Monadssenger",
-  description: "Created with v0",
-  generator: "v0.app",
+  description: "Chat messenger for the Monad community",
   icons: {
     icon: "/monad-logo.png",
   },
