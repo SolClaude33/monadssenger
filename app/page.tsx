@@ -586,6 +586,30 @@ export default function MonadssengerPage() {
             borderBottom: "1px solid var(--msn-border)",
           }}
         >
+          <a
+            href="https://x.com/monad_xyz"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="h-8 w-8 flex items-center justify-center transition-all"
+            style={{
+              borderRadius: "6px",
+              background: "linear-gradient(to bottom, #FFFFFF, #F5F3FF)",
+              border: "1px solid var(--msn-border)",
+              boxShadow: "inset 0 1px 0 rgba(255,255,255,.7)",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "linear-gradient(to bottom, #FAF5FF, #EDE9FE)"
+              e.currentTarget.style.outline = "1px solid var(--msn-blue-500)"
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "linear-gradient(to bottom, #FFFFFF, #F5F3FF)"
+              e.currentTarget.style.outline = "none"
+            }}
+            aria-label="Follow on X"
+            title="Follow on X"
+          >
+            <Twitter className="h-4 w-4" style={{ color: "#1DA1F2" }} />
+          </a>
           <button
             className="h-8 w-8 flex items-center justify-center transition-all"
             style={{
