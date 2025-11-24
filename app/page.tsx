@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Search, UserPlus, Settings, Mail, Phone, Video, ImageIcon, Smile, Loader2, Zap, Twitter } from "lucide-react"
+import { Search, UserPlus, Settings, Mail, Phone, Video, ImageIcon, Smile, Loader2, Zap } from "lucide-react"
 import Image from "next/image"
 import { db } from "@/lib/firebase/client"
 import {
@@ -552,7 +552,7 @@ export default function MonadssengerPage() {
           }}
         >
           <a
-            href="https://x.com/monad_xyz"
+            href="https://x.com/i/communities/1992936488460304385/"
             target="_blank"
             rel="noopener noreferrer"
             className="h-8 w-8 flex items-center justify-center transition-all"
@@ -572,7 +572,9 @@ export default function MonadssengerPage() {
             }}
             aria-label="Follow on X"
           >
-            <Twitter className="h-4 w-4" style={{ color: "#1DA1F2" }} />
+            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" fill="#000000"/>
+            </svg>
           </a>
           <Image src="/monad-logo.png" alt="Monadssenger" width={24} height={24} className="flex-shrink-0" />
           <span style={{ color: "var(--text-primary)", fontWeight: "600", fontSize: "15px" }}>Monadssenger</span>
@@ -587,7 +589,7 @@ export default function MonadssengerPage() {
           }}
         >
           <a
-            href="https://x.com/monad_xyz"
+            href="https://x.com/i/communities/1992936488460304385/"
             target="_blank"
             rel="noopener noreferrer"
             className="h-8 w-8 flex items-center justify-center transition-all"
@@ -608,7 +610,9 @@ export default function MonadssengerPage() {
             aria-label="Follow on X"
             title="Follow on X"
           >
-            <Twitter className="h-4 w-4" style={{ color: "#1DA1F2" }} />
+            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" fill="#000000"/>
+            </svg>
           </a>
           <button
             className="h-8 w-8 flex items-center justify-center transition-all"
