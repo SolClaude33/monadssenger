@@ -155,9 +155,34 @@ Railway debería detectar automáticamente Next.js ya que el proyecto está en l
 - Asegúrate de que la `DATABASE_URL` sea correcta
 - Verifica que las políticas de firewall de Railway permitan la conexión
 
+## 🌐 Configurar Dominio en Railway
+
+### Dominio Gratuito Automático
+
+Railway asigna automáticamente un dominio gratuito a cada servicio:
+
+1. Ve a tu servicio Next.js en Railway
+2. Haz clic en la pestaña **"Settings"**
+3. Busca la sección **"Networking"** o **"Domains"**
+4. Verás un dominio automático tipo: `tu-servicio-production.up.railway.app`
+5. Este dominio ya está activo y funcionando - puedes usarlo directamente
+
+### Configurar Dominio Personalizado (Opcional)
+
+Si quieres usar tu propio dominio:
+
+1. En la misma sección **"Networking"** o **"Domains"**
+2. Haz clic en **"Generate Domain"** o **"Custom Domain"**
+3. Ingresa tu dominio (ej: `monadssenger.tudominio.com`)
+4. Railway te dará un registro CNAME o A que debes configurar en tu proveedor de DNS
+5. Una vez configurado, Railway verificará y activará el dominio
+
+**Nota:** El dominio gratuito de Railway (`*.up.railway.app`) funciona inmediatamente sin configuración adicional.
+
 ## 📝 Notas Adicionales
 
-- Railway ofrece un dominio gratuito, pero puedes configurar un dominio personalizado
+- Railway ofrece un dominio gratuito automático (`*.up.railway.app`) que funciona inmediatamente
+- Puedes configurar un dominio personalizado si lo deseas
 - El plan gratuito de Railway incluye PostgreSQL con límites generosos
 - Los mensajes se guardan permanentemente en la base de datos PostgreSQL
 - Todos los usuarios pueden ver todos los mensajes (chat público)
