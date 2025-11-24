@@ -1,0 +1,12 @@
+[phases.setup]
+nixPkgs = ["nodejs_20", "pnpm"]
+
+[phases.install]
+cmds = ["cd monadssenger && pnpm install"]
+
+[phases.build]
+cmds = ["cd monadssenger && pnpm build"]
+
+[start]
+cmd = "cd monadssenger && pnpm start"
+
