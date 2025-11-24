@@ -551,17 +551,11 @@ export default function MonadssengerPage() {
             borderBottom: "1px solid var(--msn-border)", // use var
           }}
         >
-          <Image src="/monad-logo.png" alt="Monadssenger" width={24} height={24} className="flex-shrink-0" />
-          <span style={{ color: "var(--text-primary)", fontWeight: "600", fontSize: "15px" }}>Monadssenger</span>
-        </div>
-
-        {/* X/Twitter Link Button */}
-        <div className="px-3 pb-2">
           <a
             href="https://x.com/monad_xyz"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 p-2 transition-all cursor-pointer"
+            className="h-8 w-8 flex items-center justify-center transition-all"
             style={{
               borderRadius: "6px",
               background: "linear-gradient(to bottom, #FFFFFF, #F5F3FF)",
@@ -576,10 +570,12 @@ export default function MonadssengerPage() {
               e.currentTarget.style.background = "linear-gradient(to bottom, #FFFFFF, #F5F3FF)"
               e.currentTarget.style.outline = "none"
             }}
+            aria-label="Follow on X"
           >
             <Twitter className="h-4 w-4" style={{ color: "#1DA1F2" }} />
-            <span style={{ fontSize: "12px", color: "var(--text-primary)", fontWeight: "500" }}>Follow on X</span>
           </a>
+          <Image src="/monad-logo.png" alt="Monadssenger" width={24} height={24} className="flex-shrink-0" />
+          <span style={{ color: "var(--text-primary)", fontWeight: "600", fontSize: "15px" }}>Monadssenger</span>
         </div>
 
         {/* Toolbar */}
