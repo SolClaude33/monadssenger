@@ -157,27 +157,35 @@ Railway debería detectar automáticamente Next.js ya que el proyecto está en l
 
 ## 🌐 Configurar Dominio en Railway
 
-### Dominio Gratuito Automático
+### Generar Dominio Público
 
-Railway asigna automáticamente un dominio gratuito a cada servicio:
+Railway NO asigna automáticamente un dominio público. Debes generarlo manualmente:
 
 1. Ve a tu servicio Next.js en Railway
 2. Haz clic en la pestaña **"Settings"**
-3. Busca la sección **"Networking"** o **"Domains"**
-4. Verás un dominio automático tipo: `tu-servicio-production.up.railway.app`
-5. Este dominio ya está activo y funcionando - puedes usarlo directamente
+3. Busca la sección **"Networking"** → **"Public Networking"**
+4. En la tarjeta **"Generate Service Domain"**:
+   - En el campo **"Enter the port your app is listening on"**, cambia el puerto a **`3000`** (Next.js usa el puerto 3000 por defecto)
+   - Haz clic en el botón morado **"Generate Domain"**
+5. Railway generará un dominio público tipo: `monadssenger-production-xxxx.up.railway.app`
+6. Este dominio estará activo inmediatamente y funcionará con HTTPS
+
+**⚠️ Importante:** 
+- Next.js por defecto usa el puerto **3000**
+- Si cambias el puerto en tu configuración, usa ese puerto en Railway
+- El dominio se genera instantáneamente y ya está listo para usar
 
 ### Configurar Dominio Personalizado (Opcional)
 
 Si quieres usar tu propio dominio:
 
-1. En la misma sección **"Networking"** o **"Domains"**
-2. Haz clic en **"Generate Domain"** o **"Custom Domain"**
+1. En la misma sección **"Networking"** → **"Public Networking"**
+2. Haz clic en el botón **"Custom Domain"**
 3. Ingresa tu dominio (ej: `monadssenger.tudominio.com`)
 4. Railway te dará un registro CNAME o A que debes configurar en tu proveedor de DNS
 5. Una vez configurado, Railway verificará y activará el dominio
 
-**Nota:** El dominio gratuito de Railway (`*.up.railway.app`) funciona inmediatamente sin configuración adicional.
+**Nota:** El dominio gratuito de Railway (`*.up.railway.app`) funciona inmediatamente sin configuración adicional de DNS.
 
 ## 📝 Notas Adicionales
 
