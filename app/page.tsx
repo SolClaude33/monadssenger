@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Search, UserPlus, Settings, Mail, Phone, Video, ImageIcon, Smile, Loader2, Zap } from "lucide-react"
+import { Search, UserPlus, Settings, Mail, Phone, Video, ImageIcon, Smile, Loader2, Zap, Twitter } from "lucide-react"
 import Image from "next/image"
 import { db } from "@/lib/firebase/client"
 import {
@@ -555,6 +555,33 @@ export default function MonadssengerPage() {
           <span style={{ color: "var(--text-primary)", fontWeight: "600", fontSize: "15px" }}>Monadssenger</span>
         </div>
 
+        {/* X/Twitter Link Button */}
+        <div className="px-3 pb-2">
+          <a
+            href="https://x.com/monad_xyz"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 p-2 transition-all cursor-pointer"
+            style={{
+              borderRadius: "6px",
+              background: "linear-gradient(to bottom, #FFFFFF, #F5F3FF)",
+              border: "1px solid var(--msn-border)",
+              boxShadow: "inset 0 1px 0 rgba(255,255,255,.7)",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "linear-gradient(to bottom, #FAF5FF, #EDE9FE)"
+              e.currentTarget.style.outline = "1px solid var(--msn-blue-500)"
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "linear-gradient(to bottom, #FFFFFF, #F5F3FF)"
+              e.currentTarget.style.outline = "none"
+            }}
+          >
+            <Twitter className="h-4 w-4" style={{ color: "#1DA1F2" }} />
+            <span style={{ fontSize: "12px", color: "var(--text-primary)", fontWeight: "500" }}>Follow on X</span>
+          </a>
+        </div>
+
         {/* Toolbar */}
         <div
           className="p-2 flex gap-1"
@@ -815,6 +842,26 @@ export default function MonadssengerPage() {
                 border: "1px solid rgba(255,255,255,.3)",
               }}
             />
+          </div>
+          {/* Contract Address */}
+          <div className="mt-2 p-2" style={{ background: "rgba(255,255,255,.1)", borderRadius: "6px" }}>
+            <div className="text-xs mb-1" style={{ color: "rgba(255,255,255,.8)", fontWeight: "600" }}>
+              CA:
+            </div>
+            <div
+              className="text-xs font-mono break-all cursor-pointer hover:underline"
+              style={{ color: "rgba(255,255,255,.9)" }}
+              onClick={() => {
+                navigator.clipboard.writeText("0x0000000000000000000000000000000000000000")
+                toast({
+                  title: "Copied!",
+                  description: "Contract address copied to clipboard",
+                })
+              }}
+              title="Click to copy"
+            >
+              0x0000000000000000000000000000000000000000
+            </div>
           </div>
         </div>
       </div>
