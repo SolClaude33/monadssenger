@@ -209,13 +209,26 @@ export default function MonadssengerPage() {
         const newMessages: Message[] = []
         snapshot.forEach((doc) => {
           const data = doc.data()
+          // Handle both serverTimestamp and regular timestamps
+          let createdAt: string
+          if (data.created_at?.toDate) {
+            createdAt = data.created_at.toDate().toISOString()
+          } else if (data.created_at?.seconds) {
+            // Handle Firestore Timestamp format
+            createdAt = new Date(data.created_at.seconds * 1000).toISOString()
+          } else if (data.created_at) {
+            createdAt = data.created_at
+          } else {
+            createdAt = new Date().toISOString()
+          }
+
           newMessages.push({
             id: doc.id,
-            username: data.username,
-            user_color: data.user_color,
-            message: data.message,
-            created_at: data.created_at?.toDate ? data.created_at.toDate().toISOString() : new Date().toISOString(),
-            room: data.room,
+            username: data.username || "Unknown",
+            user_color: data.user_color || "#000000",
+            message: data.message || "",
+            created_at: createdAt,
+            room: data.room || currentRoom,
           })
         })
         // Sort by created_at client-side since we can't use orderBy without index
@@ -224,12 +237,15 @@ export default function MonadssengerPage() {
           const timeB = new Date(b.created_at).getTime()
           return timeA - timeB
         })
+        console.log(`[Monadssenger] Loaded ${newMessages.length} messages for room ${currentRoom}`)
         setMessages(newMessages)
       },
       (error) => {
-        console.log("[Monadssenger] Firebase subscription error:", error)
-        setUseInMemory(true)
-        setMessages(inMemoryMessages[currentRoom] || [])
+        console.error("[Monadssenger] Firebase subscription error:", error)
+        console.error("[Monadssenger] Error code:", error.code)
+        console.error("[Monadssenger] Error message:", error.message)
+        // Don't switch to in-memory on subscription errors, just log them
+        // The messages might still be readable
       },
     )
 
@@ -362,7 +378,7 @@ export default function MonadssengerPage() {
     }
 
     try {
-      await addDoc(collection(db, "messages"), {
+      const docRef = await addDoc(collection(db, "messages"), {
         room: currentRoom,
         username,
         user_color: userColor,
@@ -370,7 +386,7 @@ export default function MonadssengerPage() {
         created_at: serverTimestamp(), // Use server timestamp
       })
 
-      console.log("[Monadssenger] Message sent to database successfully")
+      console.log("[Monadssenger] Message sent to database successfully, ID:", docRef.id)
 
       // Clear typing indicator
       try {
@@ -1404,3 +1420,4 @@ export default function MonadssengerPage() {
     </div>
   )
 }
+
