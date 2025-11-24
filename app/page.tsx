@@ -4,7 +4,21 @@ import { useState, useEffect, useRef, useCallback } from "react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Search, UserPlus, Settings, Mail, Phone, Video, ImageIcon, Smile, Loader2, Zap } from "lucide-react"
 import Image from "next/image"
-// Removed Supabase dependency - using PostgreSQL direct with polling
+import { db } from "@/lib/firebase/client"
+import {
+  collection,
+  addDoc,
+  query,
+  where,
+  orderBy,
+  limit,
+  onSnapshot,
+  serverTimestamp,
+  doc,
+  setDoc,
+  deleteDoc,
+  getDocs,
+} from "firebase/firestore"
 import { Modal } from "@/components/modal"
 import { EmojiPicker } from "@/components/emoji-picker"
 import { useToast } from "@/hooks/use-toast"
@@ -132,16 +146,22 @@ export default function MonadssengerPage() {
 
   useEffect(() => {
     const checkDatabase = async () => {
+      // Simple check to see if config is present (basic validation)
+      if (!process.env.NEXT_PUBLIC_FIREBASE_API_KEY) {
+        console.log("[Monadssenger] Firebase config missing, using in-memory storage")
+        setUseInMemory(true)
+        return
+      }
+
       try {
-        // Try to fetch messages to verify database connection
-        const response = await fetch(`/api/messages?room=lobby&limit=1`)
-        if (!response.ok) {
-          throw new Error("Failed to fetch messages")
-        }
-        console.log("[Monadssenger] Database available")
+        // Try to access the collection to verify connection
+        // We use a query with limit 1 to minimize cost
+        const q = query(collection(db, "messages"), limit(1))
+        await getDocs(q)
+        console.log("[Monadssenger] Firebase available")
         setUseInMemory(false)
       } catch (err) {
-        console.log("[Monadssenger] Database check failed, using in-memory storage:", err)
+        console.log("[Monadssenger] Firebase check failed, using in-memory storage:", err)
         setUseInMemory(true)
       }
     }
@@ -157,76 +177,84 @@ export default function MonadssengerPage() {
       return
     }
 
-    // Fetch initial messages
-    const fetchMessages = async () => {
-      try {
-        const response = await fetch(`/api/messages?room=${currentRoom}&limit=50`)
-        if (response.ok) {
-          const data = await response.json()
-          setMessages(data.messages || [])
-        }
-      } catch (error) {
-        console.error("[Monadssenger] Error fetching messages:", error)
+    // Set up real-time listener
+    const q = query(
+      collection(db, "messages"),
+      where("room", "==", currentRoom),
+      orderBy("created_at", "asc"),
+      limit(50),
+    )
+
+    console.log("[Monadssenger] Setting up Firebase listener for room:", currentRoom)
+
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const newMessages: Message[] = []
+        snapshot.forEach((doc) => {
+          const data = doc.data()
+          newMessages.push({
+            id: doc.id,
+            username: data.username,
+            user_color: data.user_color,
+            message: data.message,
+            created_at: data.created_at?.toDate ? data.created_at.toDate().toISOString() : new Date().toISOString(),
+            room: data.room,
+          })
+        })
+        setMessages(newMessages)
+      },
+      (error) => {
+        console.log("[Monadssenger] Firebase subscription error:", error)
         setUseInMemory(true)
         setMessages(inMemoryMessages[currentRoom] || [])
-      }
-    }
-
-    fetchMessages()
-
-    // Set up polling for real-time updates (every 2 seconds)
-    console.log("[Monadssenger] Setting up polling for room:", currentRoom)
-
-    const pollInterval = setInterval(async () => {
-      try {
-        const response = await fetch(`/api/messages?room=${currentRoom}&limit=50`)
-        if (response.ok) {
-          const data = await response.json()
-          setMessages(data.messages || [])
-        }
-      } catch (error) {
-        console.error("[Monadssenger] Error polling messages:", error)
-      }
-    }, 2000) // Poll every 2 seconds
+      },
+    )
 
     return () => {
-      console.log("[Monadssenger] Cleaning up polling for room:", currentRoom)
-      clearInterval(pollInterval)
+      console.log("[Monadssenger] Cleaning up Firebase listener for room:", currentRoom)
+      unsubscribe()
     }
   }, [currentRoom, username, useInMemory, inMemoryMessages])
 
   useEffect(() => {
     if (!username || useInMemory) return
 
-    // Poll for typing indicators
-    const fetchTypingIndicators = async () => {
-      try {
-        const response = await fetch(`/api/typing?room=${currentRoom}`)
-        if (response.ok) {
-          const data = await response.json()
-          const indicators: TypingIndicator[] = (data.typing || [])
-            .filter((indicator: any) => indicator.username !== username)
-            .map((indicator: any) => ({
-              username: indicator.username,
-              user_color: indicator.user_color,
-            }))
-          setTypingUsers(indicators)
-        }
-      } catch (error) {
+    // Clean up old typing indicators (optional, could be done via Cloud Functions)
+    // For now, we just read.
+
+    const q = query(
+      collection(db, "typing_indicators"),
+      where("room", "==", currentRoom),
+      // Firebase requires an index for compound queries, so we might simplify this for now
+      // or assume the user will create the index. keeping it simple:
+    )
+
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const indicators: TypingIndicator[] = []
+        const now = Date.now()
+        snapshot.forEach((doc) => {
+          const data = doc.data()
+          // Filter client-side for timestamp to avoid complex index requirements initially
+          const updatedAt = data.updated_at ? new Date(data.updated_at).getTime() : 0
+          if (data.username !== username && now - updatedAt < 10000) {
+            indicators.push({
+              username: data.username,
+              user_color: data.user_color,
+            })
+          }
+        })
+        setTypingUsers(indicators)
+      },
+      (error) => {
         // Silently fail
         console.log("Typing indicator error", error)
-      }
-    }
+      },
+    )
 
-    // Fetch immediately
-    fetchTypingIndicators()
-
-    // Set up polling every 2 seconds for typing indicators
-    const interval = setInterval(fetchTypingIndicators, 2000)
-
-    return () => {
-      clearInterval(interval)
-    }
+    return () => unsubscribe()
   }, [currentRoom, username, useInMemory])
 
   useEffect(() => {
@@ -237,16 +265,14 @@ export default function MonadssengerPage() {
     if (!username || useInMemory) return
 
     try {
-      await fetch("/api/typing", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          room: currentRoom,
-          username,
-          user_color: userColor,
-        }),
+      // Use username as doc ID for easy upsert/delete
+      // Note: In a real app, might want composite ID of room_username
+      const docId = `${currentRoom}_${username}`
+      await setDoc(doc(db, "typing_indicators", docId), {
+        room: currentRoom,
+        username,
+        user_color: userColor,
+        updated_at: new Date().toISOString(),
       })
 
       if (typingTimeoutRef.current) {
@@ -255,9 +281,7 @@ export default function MonadssengerPage() {
 
       typingTimeoutRef.current = setTimeout(async () => {
         try {
-          await fetch(`/api/typing?room=${currentRoom}&username=${username}`, {
-            method: "DELETE",
-          })
+          await deleteDoc(doc(db, "typing_indicators", docId))
         } catch (e) {
           // ignore
         }
@@ -316,30 +340,20 @@ export default function MonadssengerPage() {
     }
 
     try {
-      const response = await fetch("/api/messages", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          room: currentRoom,
-          username,
-          user_color: userColor,
-          message: processedMessage,
-        }),
+      await addDoc(collection(db, "messages"), {
+        room: currentRoom,
+        username,
+        user_color: userColor,
+        message: processedMessage,
+        created_at: serverTimestamp(), // Use server timestamp
       })
-
-      if (!response.ok) {
-        throw new Error("Failed to send message")
-      }
 
       console.log("[Monadssenger] Message sent to database successfully")
 
       // Clear typing indicator
       try {
-        await fetch(`/api/typing?room=${currentRoom}&username=${username}`, {
-          method: "DELETE",
-        })
+        const docId = `${currentRoom}_${username}`
+        await deleteDoc(doc(db, "typing_indicators", docId))
       } catch (err) {
         // Silently fail
       }
