@@ -864,13 +864,13 @@ export default function MonadssengerPage() {
             />
           </div>
           {/* Contract Address */}
-          <div className="mt-2 p-2" style={{ background: "rgba(255,255,255,.1)", borderRadius: "6px" }}>
-            <div className="text-xs mb-1" style={{ color: "rgba(255,255,255,.8)", fontWeight: "600" }}>
+          <div className="mt-2 p-2" style={{ background: "rgba(255,255,255,.95)", borderRadius: "6px", border: "1px solid rgba(0,0,0,.1)" }}>
+            <div className="text-xs mb-1" style={{ color: "#000000", fontWeight: "600" }}>
               CA:
             </div>
             <div
-              className="text-xs font-mono break-all cursor-pointer hover:underline"
-              style={{ color: "rgba(255,255,255,.9)" }}
+              className="text-xs font-mono break-all cursor-pointer hover:underline select-all"
+              style={{ color: "#000000" }}
               onClick={() => {
                 navigator.clipboard.writeText("0x0000000000000000000000000000000000000000")
                 toast({
